@@ -1,0 +1,75 @@
+// Adidev Mohapatra 230007601
+
+/**
+ * The Hack CPU (Central Processing unit), consisting of an ALU,
+ * two registers named A and D, and a program counter named PC.
+ * The CPU is designed to fetch and execute instructions written in 
+ * the Hack machine language. In particular, functions as follows:
+ * Executes the inputted instruction according to the Hack machine 
+ * language specification. The D and A in the language specification
+ * refer to CPU-resident registers, while M refers to the external
+ * memory location addressed by A, i.e. to Memory[A]. The inM input 
+ * holds the value of this location. If the current instruction needs 
+ * to write a value to M, the value is placed in outM, the address 
+ * of the target location is placed in the addressM output, and the 
+ * writeM control bit is asserted. (When writeM==0, any value may 
+ * appear in outM). The outM and writeM outputs are combinational: 
+ * they are affected instantaneously by the execution of the current 
+ * instruction. The addressM and pc outputs are clocked: although they 
+ * are affected by the execution of the current instruction, they commit 
+ * to their new values only in the next time step. If reset==1 then the 
+ * CPU jumps to address 0 (i.e. pc is set to 0 in next time step) rather 
+ * than to the address resulting from executing the current instruction. 
+ */
+
+CHIP CPU {
+
+    IN  inM[16],         // M value input  (M = contents of RAM[A])
+        instruction[16], // Instruction for execution
+        reset;           // Signals whether to re-start the current
+                         // program (reset==1) or continue executing
+                         // the current program (reset==0).
+
+    OUT outM[16],        // M value output
+        writeM,          // Write to M? 
+        addressM[15],    // Address in data memory (of M)
+        pc[15];          // address of next instruction
+
+    PARTS:
+    // Put your code here:
+    //based of the notes that Dr.tyagi went over in the lecture 
+    Mux16(a=instruction, b=aluout, sel=instruction[15], out=out3);
+    //start off with the first mux 
+    Not(in=instruction[15], out=out1);
+    Or(a=out1, b=instruction[5], out=out2);
+    ARegister(in=out3, load=out2, out=aout, out[0..14]=addressM);
+    //video says to use a not and or gate for a register to implement
+    Mux16(a=aout, b=inM, sel=instruction[12], out=out4);
+    //second mux made 
+    DRegister(in=aluout, load=out5, out=out6);
+    And(a=instruction[15], b=instruction[4], out=out5);
+    //deregister comes next in the diagram that has a c and uses an and gate for implementation
+    ALU(x=out6, y=out4, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=outM, out=aluout, zr=out7, ng=out8); 
+    //alu implementation from the diagram video to show which instruction goes with which one
+    Not(in=out7, out=notout7);
+    Not(in=out8, out=notout8);
+    And(a=notout7, b=notout8, out=out9);
+    //not and and gate to essentially filter out the various inputs
+    And(a=instruction[15], b=instruction[0], out=jumpgt);
+    And(a=out9, b=jumpgt, out=GT);
+    And(a=instruction[15], b=instruction[1], out=jumpeq);
+    And(a=out7, b=jumpeq, out=EQ);
+    And(a=instruction[15], b=instruction[2], out=jumplt);
+    And(a=out8, b=jumplt, out=LT);
+    //and gates to jump to the appropriate value 
+    //greater, less, or equal 0
+    Or(a=GT, b=EQ, out=out10);
+    Or(a=LT, b=out10, out=finalout);
+    //or gates to filter oout the final value to finally go load to the pc  
+    And(a=instruction[15], b=instruction[3], out=writeM);
+    //video uses and gate for instruction 15 and 3 at the end for writeM
+    PC(in=aout, load=finalout, inc=true, reset=reset, out[0..14]=pc);
+    //pc in true for increment while taking the last arguments and outputting it
+
+
+}

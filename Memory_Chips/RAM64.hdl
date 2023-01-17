@@ -1,0 +1,31 @@
+// Adidev Mohapatra 230007601
+
+/**
+ * Memory of 64 registers, each 16 bit-wide. The pin out holds the value
+ * stored at the memory location specified by address. If load==1, then 
+ * the in value is loaded into the memory location specified by address 
+ * (the loaded value will be emitted to out from the next time step onward).
+ */
+
+CHIP RAM64 {
+    IN in[16], load, address[6];
+    OUT out[16];
+
+    PARTS:
+    // Put your code here:
+	// Design using RAM8 from nand2tetris builtin chips
+    
+    //use 8 different signals by using a dmux to comine them into one signal 
+    DMux8Way(in=load, sel[0..2]=address[3..5], a=b1, b=b2, c=b3, d=b4, e=b5, f=b6, g=b7, h=b8);
+    //use the ram8 to call in the individual signals and do this 8 times to get to 64(8*8=64)
+    RAM8(in=in, load=b1, address=address[0..2], out=c1);
+    RAM8(in=in, load=b2, address=address[0..2], out=c2);
+    RAM8(in=in, load=b3, address=address[0..2], out=c3);
+    RAM8(in=in, load=b4, address=address[0..2], out=c4);
+    RAM8(in=in, load=b5, address=address[0..2], out=c5);
+    RAM8(in=in, load=b6, address=address[0..2], out=c6);
+    RAM8(in=in, load=b7, address=address[0..2], out=c7);
+    RAM8(in=in, load=b8, address=address[0..2], out=c8);
+    ///takes all the inputs and gives out one output at the 
+    Mux8Way16(a=c1, b=c2, c=c3, d=c4, e=c5, f=c6, g=c7, h=c8, sel[0..2]=address[3..5], out=out);
+}

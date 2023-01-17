@@ -1,0 +1,20 @@
+// Adidev Mohapatra 230007601
+
+/**
+ * Implement a 4-bit dynamic shift cipher (we call it AggieCipher :)) that computes 
+ * out=in+counter, where counter=<0,1,2,3,4,5,6,....,15,0,1,2,...>
+ * You may ignore overflow.
+ **/
+
+CHIP AggieCipher {
+    IN in[4];
+    OUT out[4];
+	
+	PARTS:
+    // Put your code here:
+    //brings the increments from PC while bringing in counters
+    PC(in[0..3]=in, load=false, inc=true, reset=false, out=b1);
+    //adds the counter by calling add16 while not worrying about overflow
+    Add16(a=b1, b[0..3]=in, out[0..3]=out);
+
+}

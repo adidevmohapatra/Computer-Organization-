@@ -1,0 +1,23 @@
+// Adidev Mohapatra 230007601
+
+/**
+ * Adds two 6-bit values
+ * The chip performs out=a+b
+ * Both inputs a and b are UNSIGNED 
+ * The carry output reflects the overflow of the Add6 chip
+ */
+
+
+CHIP Add6 {
+    IN a[6], b[6];
+    OUT out[6],carry;
+
+    PARTS:
+   // Put you code here:
+   //Implement an RC4 half adder to get the first 4 bits
+   RCA4(a=a[0..3],b=b[0..3],sum[0..3]=out[0..3],cout=c1);
+   //Implement a RCA full adder using only 2 of the available 4 bits to get the carry
+   //which is not possible to use on the half adder
+   RCA4FA(a[0..1]=a[4..5],b[0..1]=b[4..5], cin=c1, sum[0..1]=out[4..5],sum[2]=carry);
+
+}

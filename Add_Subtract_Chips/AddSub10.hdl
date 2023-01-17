@@ -1,0 +1,37 @@
+// Adidev Mohapatra 230007601
+
+/**
+ * Adds or Subtracts two 10-bit values.
+ * Both inputs a and b are in SIGNED 2s complement format
+ * when sub == 0, the chip performs add i.e. out=a+b
+ * when sub == 1, the chip performs subtract i.e. out=a-b
+ * carry reflects the overflow calculated for 10-bit add/subtract in 2s complement
+ */
+
+CHIP AddSub10 {
+    IN a[10], b[10], sub;
+    OUT out[10],carry;
+
+    PARTS:
+   // Put you code here:
+   //have not 16 then a inc 16 to reverse and incrmenrt by 1 by following 2's compliment
+   //then the mux 15 and add 16 allows the 10 bits to be added
+
+   Negation16(in[0..9]=b,out[0..9]=notb);
+   Mux16(a[0..9]=b,b[0..9]=notb,sel=sub,out[0]=c1,out[1]=c2,out[2]=c3,out[3]=c4,out[4]=c5,out[5]=c6, out[6]=c7,out[7]=c8,out[8]=c9,out[9]=c10);
+   ////sub-busing 0 thorugh 9 bits to split the 10 bits rather than putting it in one line
+   FullAdder(a=a[0],b=c1,c=false,sum=out[0],carry=d1);
+   FullAdder(a=a[1],b=c2,c=d1, sum=out[1], carry=d2);
+   FullAdder(a=a[2],b=c3, c=d2, sum=out[2], carry=d3);
+   FullAdder(a=a[3],b=c4,c=d3,sum=out[3],carry=d4);
+   FullAdder(a=a[4],b=c5,c=d4, sum=out[4], carry=d5);
+   FullAdder(a=a[5],b=c6, c=d5, sum=out[5], carry=d6);
+   FullAdder(a=a[6],b=c7,c=d6,sum=out[6],carry=d7);
+   FullAdder(a=a[7],b=c8,c=d7, sum=out[7], carry=d8);
+   FullAdder(a=a[8],b=c9, c=d8, sum=out[8], carry=d9);
+   FullAdder(a=a[9],b=c10,c=d9,sum=out[9],carry=d10);
+   ////takes in the most imporant a and b values while having the carry overflow for negative and positive
+   Xor(a=a[9], b=c10, out=carry);
+
+
+}
