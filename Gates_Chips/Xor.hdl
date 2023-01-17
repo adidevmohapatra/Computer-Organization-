@@ -1,0 +1,22 @@
+// Adidev Mohapatra 230007601
+
+/**
+ * Exclusive-or gate:
+ * out = not (a == b)
+ */
+
+CHIP Xor {
+    IN a, b;
+    OUT out;
+
+    PARTS:
+    // Put your code here:
+
+    Not(in=a,out=notout1);
+    And(a=notout1,b=b,out=andout1);
+    Not(in=b,out=notout2);
+    And(a=a,b=notout2,out=andout2);
+    Or(a=andout1,b=andout2,out=out);
+    
+
+}

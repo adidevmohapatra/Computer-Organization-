@@ -1,0 +1,16 @@
+// Adidev Mohapatra 230007601
+
+/**
+ * Exclusive-Nor gate:
+ * out = (a == b)
+ */
+
+CHIP Xnor {
+    IN a, b;
+    OUT out;
+
+    PARTS:
+    // Put your code here:
+    Xor(a=a,b=b,out=xorout);
+    Not(in=xorout,out=out);
+}
